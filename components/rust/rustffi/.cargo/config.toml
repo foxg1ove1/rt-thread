@@ -1,0 +1,15 @@
+[unstable]
+build-std = ["core", "alloc", "panic_abort"]  # 启用核心库重编译
+
+[build]
+target = "riscv64imac-unknown-none-elf"
+
+[target.riscv64imac-unknown-none-elf]
+rustflags = [
+    "-C", "target-feature=-zmmul,-zaamo,-zalrsc",
+    "-C", "link-arg=-march=rv64imac",
+    "-C", "link-arg=-mabi=lp64",
+    "-C", "link-arg=-Wl,--no-relax"
+]
+linker = "riscv64-unknown-linux-musl-gcc"  # 指定 RISC-V 专用链接器
+
