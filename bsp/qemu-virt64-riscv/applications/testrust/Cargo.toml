@@ -1,0 +1,8 @@
+[package]
+name = "testrust"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+rtt_main = {path = "../../packages/rtt_rust-latest/rtt_main/"}
+rtt_rs2 = {path = "../../packages/rtt_rust-latest/rtt_rs2/"}

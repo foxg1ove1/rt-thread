@@ -53,7 +53,7 @@ fn main() {
 
         // CPU 相关的头文件路径
         .clang_arg(format!("-I{}", cpu_path))
-        .clang_arg(format!("-I/home/fox/OSPP/riscv_rtt_rust/rt-thread/libcpu/risc-v/virt64"))
+        .clang_arg(format!("-I/home/fox/OSPP/RT-Thread/qemu-edu/rt-thread/libcpu/risc-v/virt64"))
 
         // rt-thread 的头文件路径
         .clang_arg(format!("-I{}/include", rtthread_path))

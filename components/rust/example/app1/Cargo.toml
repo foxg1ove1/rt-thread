@@ -1,0 +1,16 @@
+[package]
+name = "rust_example"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["staticlib"]
+
+[dependencies]
+rtt_main = { path = "../../packages/rtt_rust-v1.0.0/rtt_main/" }
+rtt_rs2 = { path = "../../packages/rtt_rust-v1.0.0/rtt_rs2/" }
+
+[profile.release]
+panic = "abort"
+lto = true
+opt-level = "s"

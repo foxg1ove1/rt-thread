@@ -979,9 +979,12 @@ rt_weak void *rt_malloc_align(rt_size_t size, rt_size_t align)
     /* get total aligned size */
     align_size = ((size + uintptr_size) & ~uintptr_size) + align;
     /* allocate memory block from heap */
+    // rt_kprintf("rt_malloc_align: ptr = %p, size = %d, align = %d\n", ptr, size, align);
+    // rt_kprintf("total size = %d, align = %d\n", align_size, align);
     ptr = rt_malloc(align_size);
     if (ptr != RT_NULL)
     {
+        // rt_kprintf("after malloc rt_malloc_align: ptr = %p, size = %d, align = %d\n", ptr, size, align);
         /* the allocated memory block is aligned */
         if (((rt_uintptr_t)ptr & (align - 1)) == 0)
         {
@@ -996,6 +999,7 @@ rt_weak void *rt_malloc_align(rt_size_t size, rt_size_t align)
         *((rt_uintptr_t *)((rt_uintptr_t)align_ptr - sizeof(void *))) = (rt_uintptr_t)ptr;
 
         ptr = align_ptr;
+        // rt_kprintf("after align rt_malloc_align: ptr = %p, size = %d, align = %d\n", ptr, size, align);
     }
 
     return ptr;

@@ -489,6 +489,7 @@ rt_inline int zoneindex(rt_size_t *bytes)
  */
 void *rt_slab_alloc(rt_slab_t m, rt_size_t size)
 {
+    rt_kprintf("rt_slab_alloc: system_heap = %ld size = %d\n", m, size);
     struct rt_slab_zone *z;
     rt_int32_t zi;
     struct rt_slab_chunk *chunk;

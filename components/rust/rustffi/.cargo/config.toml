@@ -11,5 +11,5 @@ rustflags = [
     "-C", "link-arg=-mabi=lp64",
     "-C", "link-arg=-Wl,--no-relax"
 ]
-linker = "riscv64-unknown-linux-musl-gcc"  # 指定 RISC-V 专用链接器
+linker = "riscv64-unknown-none-gcc"  # 指定 RISC-V 专用链接器
 

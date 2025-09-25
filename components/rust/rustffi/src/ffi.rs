@@ -165,7 +165,6 @@ pub const RT_CONSOLEBUF_SIZE: u32 = 256;
 pub const RT_CONSOLE_DEVICE_NAME: &[u8; 6] = b"uart0\0";
 pub const RT_VER_NUM: u32 = 328192;
 pub const RT_BACKTRACE_LEVEL_MAX_NR: u32 = 32;
-pub const KERNEL_VADDR_START: i64 = -274877906944;
 pub const RT_MAIN_THREAD_STACK_SIZE: u32 = 16384;
 pub const RT_MAIN_THREAD_PRIORITY: u32 = 10;
 pub const FINSH_THREAD_NAME: &[u8; 7] = b"tshell\0";
@@ -182,12 +181,6 @@ pub const RT_DFS_ELM_MAX_LFN: u32 = 255;
 pub const RT_DFS_ELM_DRIVES: u32 = 2;
 pub const RT_DFS_ELM_MAX_SECTOR_SIZE: u32 = 512;
 pub const RT_DFS_ELM_MUTEX_TIMEOUT: u32 = 3000;
-pub const RT_PAGECACHE_COUNT: u32 = 4096;
-pub const RT_PAGECACHE_ASPACE_COUNT: u32 = 1024;
-pub const RT_PAGECACHE_PRELOAD: u32 = 4;
-pub const RT_PAGECACHE_HASH_NR: u32 = 1024;
-pub const RT_PAGECACHE_GC_WORK_LEVEL: u32 = 90;
-pub const RT_PAGECACHE_GC_STOP_LEVEL: u32 = 70;
 pub const RT_UNAMED_PIPE_NUMBER: u32 = 64;
 pub const RT_SYSTEM_WORKQUEUE_STACKSIZE: u32 = 8192;
 pub const RT_SYSTEM_WORKQUEUE_PRIORITY: u32 = 23;
@@ -197,7 +190,6 @@ pub const RT_USING_VIRTIO_CONSOLE_PORT_MAX_NR: u32 = 4;
 pub const RT_LIBC_TZ_DEFAULT_HOUR: u32 = 8;
 pub const RT_LIBC_TZ_DEFAULT_MIN: u32 = 0;
 pub const RT_LIBC_TZ_DEFAULT_SEC: u32 = 0;
-pub const RT_SIGNALFD_MAX_NUM: u32 = 10;
 pub const RT_USING_POSIX_PIPE_SIZE: u32 = 512;
 pub const NETDEV_IPV4: u32 = 1;
 pub const NETDEV_IPV6: u32 = 0;
@@ -235,12 +227,6 @@ pub const UTEST_THR_STACK_SIZE: u32 = 4096;
 pub const UTEST_THR_PRIORITY: u32 = 20;
 pub const RT_PAGE_AFFINITY_BLOCK_SIZE: u32 = 4096;
 pub const RT_PAGE_MAX_ORDER: u32 = 11;
-pub const RT_LWP_MAX_NR: u32 = 30;
-pub const LWP_TASK_STACK_SIZE: u32 = 16384;
-pub const RT_CH_MSG_MAX_NR: u32 = 1024;
-pub const LWP_TID_MAX_NR: u32 = 64;
-pub const RT_LWP_SHM_MAX_NR: u32 = 64;
-pub const LWP_PTY_MAX_PARIS_LIMIT: u32 = 64;
 pub const __STACKSIZE__: u32 = 16384;
 pub const _NEWLIB_VERSION_H__: u32 = 1;
 pub const _NEWLIB_VERSION: &[u8; 6] = b"4.4.0\0";
@@ -588,8 +574,6 @@ pub const RT_THREAD_CTRL_CHANGE_PRIORITY: u32 = 2;
 pub const RT_THREAD_CTRL_INFO: u32 = 3;
 pub const RT_THREAD_CTRL_BIND_CPU: u32 = 4;
 pub const RT_THREAD_CTRL_RESET_PRIORITY: u32 = 5;
-pub const _LWP_NSIG: u32 = 64;
-pub const _LWP_NSIG_BPW: u32 = 64;
 pub const RT_IPC_FLAG_FIFO: u32 = 0;
 pub const RT_IPC_FLAG_PRIO: u32 = 1;
 pub const RT_IPC_CMD_UNKNOWN: u32 = 0;
@@ -1358,10 +1342,6 @@ pub struct rt_object {
     pub type_: rt_uint8_t,
     #[doc = "< flag of kernel object"]
     pub flag: rt_uint8_t,
-    #[doc = "< id of application module"]
-    pub module_id: *mut ::core::ffi::c_void,
-    #[doc = "< ref count for lwp"]
-    pub lwp_ref_count: rt_atomic_t,
     #[doc = "< list node of kernel object"]
     pub list: rt_list_t,
 }
@@ -1478,103 +1458,6 @@ pub struct rt_interrupt_context {
 }
 #[doc = " interrupt/exception frame handling\n"]
 pub type rt_interrupt_context_t = *mut rt_interrupt_context;
-pub type rt_wakeup_func_t = ::core::option::Option<
-    unsafe extern "C" fn(object: *mut ::core::ffi::c_void, thread: *mut rt_thread) -> rt_err_t,
->;
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct rt_wakeup {
-    pub func: rt_wakeup_func_t,
-    pub user_data: *mut ::core::ffi::c_void,
-}
-pub type lwp_sighandler_t = ::core::option::Option<unsafe extern "C" fn(arg1: ::core::ffi::c_int)>;
-pub type lwp_sigaction_t = ::core::option::Option<
-    unsafe extern "C" fn(
-        signo: ::core::ffi::c_int,
-        info: *mut siginfo_t,
-        context: *mut ::core::ffi::c_void,
-    ),
->;
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct lwp_sigset_t {
-    pub sig: [::core::ffi::c_ulong; 1usize],
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct lwp_sigaction {
-    pub __sa_handler: lwp_sigaction__bindgen_ty_1,
-    pub sa_mask: lwp_sigset_t,
-    pub sa_flags: ::core::ffi::c_int,
-    pub sa_restorer: ::core::option::Option<unsafe extern "C" fn()>,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union lwp_sigaction__bindgen_ty_1 {
-    pub _sa_handler: ::core::option::Option<unsafe extern "C" fn(arg1: ::core::ffi::c_int)>,
-    pub _sa_sigaction: ::core::option::Option<
-        unsafe extern "C" fn(
-            arg1: ::core::ffi::c_int,
-            arg2: *mut siginfo_t,
-            arg3: *mut ::core::ffi::c_void,
-        ),
-    >,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct lwp_siginfo_ext {
-    pub __bindgen_anon_1: lwp_siginfo_ext__bindgen_ty_1,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union lwp_siginfo_ext__bindgen_ty_1 {
-    pub sigchld: lwp_siginfo_ext__bindgen_ty_1__bindgen_ty_1,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct lwp_siginfo_ext__bindgen_ty_1__bindgen_ty_1 {
-    pub status: ::core::ffi::c_int,
-    pub utime: clock_t,
-    pub stime: clock_t,
-}
-pub type lwp_siginfo_ext_t = *mut lwp_siginfo_ext;
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct lwp_siginfo {
-    pub node: rt_list_t,
-    pub ksiginfo: lwp_siginfo__bindgen_ty_1,
-    pub ext: *mut lwp_siginfo_ext,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct lwp_siginfo__bindgen_ty_1 {
-    pub signo: ::core::ffi::c_int,
-    pub code: ::core::ffi::c_int,
-    pub from_tid: ::core::ffi::c_int,
-    pub from_pid: pid_t,
-}
-pub type lwp_siginfo_t = *mut lwp_siginfo;
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct lwp_sigqueue {
-    pub siginfo_list: rt_list_t,
-    pub sigset_pending: lwp_sigset_t,
-}
-pub type lwp_sigqueue_t = *mut lwp_sigqueue;
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct lwp_thread_signal {
-    pub sigset_mask: lwp_sigset_t,
-    pub sig_queue: lwp_sigqueue,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct rt_user_context {
-    pub sp: *mut ::core::ffi::c_void,
-    pub pc: *mut ::core::ffi::c_void,
-    pub flag: *mut ::core::ffi::c_void,
-    pub ctx: *mut ::core::ffi::c_void,
-}
 pub type rt_thread_cleanup_t = ::core::option::Option<unsafe extern "C" fn(tid: *mut rt_thread)>;
 #[doc = " Thread structure"]
 #[repr(C)]
@@ -1612,41 +1495,6 @@ pub struct rt_thread {
     pub sig_vectors: *mut rt_sighandler_t,
     #[doc = "< the signal infor list"]
     pub si_list: *mut ::core::ffi::c_void,
-    #[doc = "< the return msg"]
-    pub msg_ret: *mut ::core::ffi::c_void,
-    #[doc = "< the lwp reference"]
-    pub lwp: *mut ::core::ffi::c_void,
-    pub user_entry: *mut ::core::ffi::c_void,
-    pub user_stack: *mut ::core::ffi::c_void,
-    pub user_stack_size: rt_uint32_t,
-    #[doc = "< kernel stack point"]
-    pub kernel_sp: *mut rt_uint32_t,
-    #[doc = "< next thread of same process"]
-    pub sibling: rt_list_t,
-    #[doc = "< lwp signal for user-space thread"]
-    pub signal: lwp_thread_signal,
-    #[doc = "< user space context"]
-    pub user_ctx: rt_user_context,
-    #[doc = "< wakeup handle for IPC"]
-    pub wakeup_handle: rt_wakeup,
-    #[doc = "< pending exit request of thread"]
-    pub exit_request: rt_atomic_t,
-    #[doc = "< thread ID used by process"]
-    pub tid: ::core::ffi::c_int,
-    #[doc = "< reference of tid"]
-    pub tid_ref_count: ::core::ffi::c_int,
-    #[doc = "< suspended recycler on this thread"]
-    pub susp_recycler: *mut ::core::ffi::c_void,
-    #[doc = "< pi lock, very carefully, it's a userspace list!"]
-    pub robust_list: *mut ::core::ffi::c_void,
-    pub step_exec: ::core::ffi::c_int,
-    pub debug_attach_req: ::core::ffi::c_int,
-    pub debug_ret_user: ::core::ffi::c_int,
-    pub debug_suspend: ::core::ffi::c_int,
-    pub regs: *mut rt_hw_exp_stack,
-    pub thread_idr: *mut ::core::ffi::c_void,
-    #[doc = " lwp thread indicator"]
-    pub clear_child_tid: *mut ::core::ffi::c_int,
     #[doc = "< Ticks on user"]
     pub user_time: rt_ubase_t,
     #[doc = "< Ticks on system"]
@@ -1771,6 +1619,7 @@ pub struct rt_memory {
     pub max: rt_size_t,
 }
 pub type rt_mem_t = *mut rt_memory;
+pub type rt_smem_t = rt_mem_t;
 pub type rt_slab_t = rt_mem_t;
 #[doc = " Base structure of Memory pool object"]
 #[repr(C)]
@@ -1951,32 +1800,6 @@ pub struct rt_device {
 pub struct rt_device_notify {
     pub notify: ::core::option::Option<unsafe extern "C" fn(dev: rt_device_t)>,
     pub dev: *mut rt_device,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct rt_channel {
-    #[doc = "< inherit from object"]
-    pub parent: rt_ipc_object,
-    #[doc = "< the thread will be reply"]
-    pub reply: *mut rt_thread,
-    #[doc = "< spinlock of this channel"]
-    pub slock: rt_spinlock,
-    #[doc = "< the wait queue of sender msg"]
-    pub wait_msg: rt_list_t,
-    #[doc = "< the wait queue of sender thread"]
-    pub wait_thread: rt_list_t,
-    #[doc = "< channel poll queue"]
-    pub reader_queue: rt_wqueue_t,
-    #[doc = "< the status of this channel"]
-    pub stat: rt_uint8_t,
-    pub ref_: rt_ubase_t,
-}
-pub type rt_channel_t = *mut rt_channel;
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct rt_module_symtab {
-    pub addr: *mut ::core::ffi::c_void,
-    pub name: *const ::core::ffi::c_char,
 }
 pub const RT_HW_CACHE_FLUSH: RT_HW_CACHE_OPS = 1;
 pub const RT_HW_CACHE_INVALIDATE: RT_HW_CACHE_OPS = 2;
@@ -2227,12 +2050,12 @@ pub struct rt_dlmodule_ops {
 pub type __builtin_va_list = *mut ::core::ffi::c_void;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct rt_hw_exp_stack {
+pub struct dfs_file_ops {
     pub _address: u8,
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct dfs_file_ops {
+pub struct rt_module_symtab {
     pub _address: u8,
 }
 unsafe extern "C" {
@@ -2327,8 +2150,6 @@ unsafe extern "C" {
     pub fn _rt_errno() -> *mut ::core::ffi::c_int;
     pub fn rt_strerror(error: rt_err_t) -> *const ::core::ffi::c_char;
     pub fn rt_hw_cpu_id() -> ::core::ffi::c_int;
-    #[doc = " @brief local cpu icahce & dcache synchronization\n\n @param addr\n @param size"]
-    pub fn rt_hw_sync_cache_local(addr: *mut ::core::ffi::c_void, size: ::core::ffi::c_int);
     pub fn rt_hw_cpu_icache_enable();
     pub fn rt_hw_cpu_icache_disable();
     pub fn rt_hw_cpu_icache_status() -> rt_base_t;
@@ -2636,12 +2457,6 @@ unsafe extern "C" {
         suspend_flag: ::core::ffi::c_int,
     ) -> rt_err_t;
     pub fn rt_thread_resume(thread: rt_thread_t) -> rt_err_t;
-    pub fn rt_thread_wakeup(thread: rt_thread_t) -> rt_err_t;
-    pub fn rt_thread_wakeup_set(
-        thread: *mut rt_thread,
-        func: rt_wakeup_func_t,
-        user_data: *mut ::core::ffi::c_void,
-    );
     pub fn rt_thread_get_name(
         thread: rt_thread_t,
         name: *mut ::core::ffi::c_char,
@@ -2754,6 +2569,20 @@ unsafe extern "C" {
     pub fn rt_free_sethook(
         hook: ::core::option::Option<unsafe extern "C" fn(ptr: *mut *mut ::core::ffi::c_void)>,
     );
+    #[doc = " small memory object interface"]
+    pub fn rt_smem_init(
+        name: *const ::core::ffi::c_char,
+        begin_addr: *mut ::core::ffi::c_void,
+        size: rt_size_t,
+    ) -> rt_smem_t;
+    pub fn rt_smem_detach(m: rt_smem_t) -> rt_err_t;
+    pub fn rt_smem_alloc(m: rt_smem_t, size: rt_size_t) -> *mut ::core::ffi::c_void;
+    pub fn rt_smem_realloc(
+        m: rt_smem_t,
+        rmem: *mut ::core::ffi::c_void,
+        newsize: rt_size_t,
+    ) -> *mut ::core::ffi::c_void;
+    pub fn rt_smem_free(rmem: *mut ::core::ffi::c_void);
     #[doc = " slab object interface"]
     pub fn rt_slab_init(
         name: *const ::core::ffi::c_char,

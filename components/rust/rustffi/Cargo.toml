@@ -16,3 +16,9 @@ bindgen = "0.71.1"
 name = "rustffi"
 crate-type = ["staticlib"]
 path = "src/lib.rs"
+
+[dependencies]
+cty = "0.2.2"
+linked_list_allocator = "0.10.5"
+libc = {version = "0.2", default-features = false, features = ["const-extern-fn"]}
+cstr_core = "0.2.6"

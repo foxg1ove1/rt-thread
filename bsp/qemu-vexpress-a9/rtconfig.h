@@ -131,7 +131,6 @@
 /* RT-Thread Components */
 
 #define RT_USING_COMPONENTS_INIT
-// #define RT_USING_MUSLLIBC
 #define RT_USING_USER_MAIN
 #define RT_MAIN_THREAD_STACK_SIZE 8196
 #define RT_MAIN_THREAD_PRIORITY 10
@@ -321,7 +320,7 @@
 #define RT_USING_LDSO
 #define LWP_USING_TERMINAL
 #define LWP_PTY_MAX_PARIS_LIMIT 64
-
+#define RT_USING_MUSLLIBC
 /* Using USB legacy version */
 
 /* end of Using USB legacy version */
@@ -377,6 +376,8 @@
 /* XML: Extensible Markup Language */
 
 /* end of XML: Extensible Markup Language */
+#define PKG_USING_RTT_RUST
+#define PKG_USING_RTT_RUST_V010
 /* end of language packages */
 
 /* multimedia packages */
